@@ -1,0 +1,35 @@
+# ============================================================
+# チャンク（セグメント）分割設定
+# ============================================================
+# ドキュメントをナレッジベースに登録する際のチャンク分割ルールです。
+# 設定を変更しない場合は "automatic" のままで問題ありません。
+#
+# 参考: Dify ドキュメント
+#   https://docs.dify.ai/en/use-dify/knowledge/create-knowledge/chunking-and-cleaning-text
+# ============================================================
+
+# インデクシング品質
+#   "high_quality" : 高品質（Embedding モデルを使用、推奨）
+#   "economy"      : エコノミー（キーワードインデックスのみ）
+indexing_technique: "high_quality"
+
+# チャンク分割モード
+#   "automatic" : Dify に自動分割を任せる（初回はこちら推奨）
+#   "custom"    : セパレータやチャンクサイズを手動で指定
+mode: "automatic"
+
+# ---- 以下は mode: "custom" のときのみ有効 ----
+
+custom:
+  # 分割セパレータ（例: "\\n" = 改行, "\\n\\n" = 空行, "###" = 見出し）
+  separator: "\\n"
+
+  # 1チャンクの最大トークン数（50〜4000 を推奨）
+  max_tokens: 500
+
+  # 前処理ルール
+  pre_processing:
+    # 連続する空白・改行・タブを圧縮する
+    remove_extra_spaces: true
+    # URL・メールアドレスを除去する
+    remove_urls_emails: false

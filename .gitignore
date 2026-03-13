@@ -1,0 +1,13 @@
+# 設定ファイル（API キーを含むため）
+config/connection.yaml
+
+# ログ
+logs/
+
+# 状態ファイル
+state/
+
+# Python
+__pycache__/
+*.pyc
+.venv/

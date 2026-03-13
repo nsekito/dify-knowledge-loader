@@ -1,0 +1,31 @@
+# ============================================================
+# メタデータ設定
+# ============================================================
+# ナレッジベースのドキュメントに付与するメタデータを定義します。
+#
+# ＜仕組み＞
+#   1. fields: ナレッジベースに作成するメタデータフィールド（型の定義）
+#   2. values: 各ファイルに付与するメタデータの値（自動 or 固定）
+#
+# ＜値の指定方法＞
+#   "auto:filename"      → ファイル名を自動設定（例: setup.md）
+#   "auto:relative_path" → target_dir からの相対パスを自動設定（例: manual/setup.md）
+#   任意の文字列/数値     → 全ファイルに共通で付与される固定値
+#   ""（空文字）          → デフォルト空。CLI の --meta オプションで上書き可能
+# ============================================================
+
+# ナレッジベースに定義するフィールド
+# type は "string" / "number" / "time" のいずれか
+fields:
+  - name: "original_filename"
+    type: "string"
+  - name: "file_path"
+    type: "string"
+  - name: "section"
+    type: "string"
+
+# 各ファイルに付与するメタデータの値
+values:
+  original_filename: "auto:filename"
+  file_path: "auto:relative_path"
+  section: ""

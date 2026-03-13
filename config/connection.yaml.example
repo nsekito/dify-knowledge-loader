@@ -1,0 +1,37 @@
+# ============================================================
+# Dify サーバ接続設定
+# ============================================================
+# このファイルでは Dify サーバへの接続情報を設定します。
+# connection.yaml.example をコピーして connection.yaml を作成してください。
+#
+#   cp connection.yaml.example connection.yaml
+#
+# ============================================================
+
+# Dify サーバの URL（末尾スラッシュなし）
+base_url: "http://192.168.1.100"
+
+# ナレッジベースの API キー
+# Dify 管理画面 > ナレッジ > API アクセス > API キー から取得
+api_key: "dataset-XXXXXXXXXXXXXXXXXXXXXXXX"
+
+# 対象ナレッジベース ID
+# Dify 管理画面 > ナレッジ > 対象ナレッジを選択 > URL の datasets/ 以降の UUID
+dataset_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# アップロード対象の Markdown ファイルが格納されているディレクトリ
+# Windows の場合はバックスラッシュ(\)またはスラッシュ(/)どちらでも可
+target_dir: "C:/docs/knowledge"
+
+# サブディレクトリも再帰的に探索するか
+recursive: true
+
+# 除外パターン（glob 形式、省略可）
+# 例: ドラフト用フォルダや一時ファイルを除外
+exclude_patterns:
+  - "_draft/**"
+  - "*.tmp.md"
+
+# API リクエスト間のインターバル（秒）
+# サーバ負荷軽減のため、ファイル間に待機時間を入れます
+upload_interval_sec: 1.0
