@@ -27,30 +27,62 @@ cd dify-knowledge-loader
 
 またはアーカイブを展開して配置します。
 
-### 2. オフライン環境でのライブラリインストール
+### 2. 仮想環境の作成（推奨）
 
-閉塞環境では `.whl` ファイルを持ち込んでインストールします。
+プロジェクト専用の仮想環境を作成し、システムの Python 環境を汚さないようにします。
+venv は Python 標準機能のため、インターネット接続は不要です。
 
-**インターネット接続のある端末で事前準備:**
+```powershell
+# 仮想環境を作成
+py -m venv .venv
+
+# 有効化（PowerShell）
+.\.venv\Scripts\Activate.ps1
+```
+
+> **補足:** `python` ではなく `py`（Python Launcher）を使ってください。
+> Windows では `python` が Microsoft Store のスタブを指すことがあり、正しく動作しない場合があります。
+
+有効化するとプロンプトの先頭に `(.venv)` が表示されます:
+
+```
+(.venv) PS C:\Users\user01\workspace\dify-knowledge-loader>
+```
+
+> **注意:** PowerShell でスクリプト実行がブロックされる場合は、
+> 以下を先に実行してください:
+>
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+
+### 3. ライブラリのインストール
+
+仮想環境を有効化した状態で実行してください。
+
+**オンライン環境の場合:**
+
+```powershell
+pip install -r requirements.txt
+```
+
+**閉塞環境の場合（.whl を持ち込み）:**
+
+インターネット接続のある端末で事前に `.whl` ファイルをダウンロードしておきます:
 
 ```bash
 pip download requests PyYAML -d ./wheels
 ```
 
-**閉塞環境の端末で:**
+ダウンロードした `wheels/` フォルダを閉塞環境に持ち込み、インストールします:
 
-```bash
+```powershell
 pip install --no-index --find-links=./wheels requests PyYAML
 ```
 
-または個別にインストール:
+> `.whl` とは Python パッケージの配布形式で、オフライン環境でも `pip install` でインストールできるファイルです。
 
-```bash
-pip install requests-2.x.x-py3-none-any.whl
-pip install PyYAML-6.x.x-cpXX-cpXX-win_amd64.whl
-```
-
-### 3. 設定ファイルの作成
+### 4. 設定ファイルの作成
 
 ```
 cd config
@@ -133,9 +165,11 @@ python -m src.main upload --dry-run
 2. 「基本タスクの作成」を選択
 3. トリガー: 毎日 / 毎時間など任意に設定
 4. 操作:
-   - プログラム: `python`
+   - プログラム: `C:\path\to\dify-knowledge-loader\.venv\Scripts\python.exe`（venv 内の python を指定）
    - 引数: `-m src.main update`
    - 開始: `C:\path\to\dify-knowledge-loader`（リポジトリのパス）
+
+> venv を有効化できないバッチ実行では、venv 内の `python.exe` をフルパスで指定します。
 
 ---
 
@@ -185,6 +219,8 @@ python -m src.main upload --dry-run
 | 値 | 動作 | 例 |
 |----|------|----|
 | `auto:filename` | ファイル名を自動設定 | `setup.md` |
+| `auto:filename_stem` | 拡張子なしファイル名を自動設定 | `setup` |
+| `auto:parent_dir` | 親ディレクトリ名を自動設定 | `manual` |
 | `auto:relative_path` | target_dir からの相対パスを自動設定 | `manual/setup.md` |
 
 ### 固定値
@@ -205,16 +241,18 @@ python -m src.main upload --meta section="設計書" --meta author="田中"
 
 ### Markdown ファイルの配置例
 
+Excel ファイル単位でフォルダを作成し、シートごとの md ファイルを配置します。
+
 ```
 C:\docs\knowledge\
-├── manual\
-│   ├── setup.md
-│   └── install.md
-├── guide\
-│   ├── overview.md
-│   └── faq.md
-└── reference\
-    └── api.md
+├── 設計書\
+│   ├── 概要.md
+│   └── 詳細.md
+├── 運用マニュアル\
+│   ├── 手順A.md
+│   └── 手順B.md
+└── FAQ集\
+    └── よくある質問.md
 ```
 
 ### metadata.yaml の設定
@@ -229,20 +267,21 @@ fields:
     type: "string"
 
 values:
-  original_filename: "auto:filename"
+  original_filename: "auto:parent_dir"
   file_path: "auto:relative_path"
-  section: ""
+  section: "auto:filename_stem"
 ```
 
 ### 付与されるメタデータ
 
 | ファイル | original_filename | file_path | section |
 |----------|-------------------|-----------|---------|
-| manual/setup.md | setup.md | manual/setup.md | （CLI で指定した値） |
-| manual/install.md | install.md | manual/install.md | （CLI で指定した値） |
-| guide/overview.md | overview.md | guide/overview.md | （CLI で指定した値） |
+| 設計書/概要.md | 設計書 | 設計書/概要.md | 概要 |
+| 設計書/詳細.md | 設計書 | 設計書/詳細.md | 詳細 |
+| 運用マニュアル/手順A.md | 運用マニュアル | 運用マニュアル/手順A.md | 手順A |
+| FAQ集/よくある質問.md | FAQ集 | FAQ集/よくある質問.md | よくある質問 |
 
-`section` は `--meta section="マニュアル"` のように CLI で上書きできます。
+`--meta` オプションで値を上書きすることもできます（例: `--meta section="設計書"`）。
 
 ---
 
@@ -273,6 +312,26 @@ values:
 
 - `metadata.yaml` の `fields` に定義されていないフィールドを `values` で参照していないか確認してください
 - `python -m src.main metadata sync` でフィールドを同期してください
+
+### `python` コマンドでバージョンが正しく表示されない
+
+Windows では `python` が Microsoft Store のスタブを指している場合があります。
+
+```powershell
+# Python Launcher を使ってください
+py --version
+py -m src.main upload
+```
+
+venv を有効化した状態であれば `python` で問題ありません。
+
+### PowerShell で `.ps1` スクリプトの実行がブロックされる
+
+venv の `Activate.ps1` が実行できない場合:
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
 ### ログの確認
 

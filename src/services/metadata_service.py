@@ -174,6 +174,10 @@ class MetadataService:
 
         if raw_value == "auto:filename":
             return file_path.name
+        elif raw_value == "auto:filename_stem":
+            return file_path.stem
+        elif raw_value == "auto:parent_dir":
+            return file_path.parent.name
         elif raw_value == "auto:relative_path":
             try:
                 return file_path.relative_to(target_dir).as_posix()

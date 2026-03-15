@@ -28,6 +28,6 @@ fields:
 
 # 各ファイルに付与するメタデータの値
 values:
-  original_filename: "auto:filename"
+  original_filename: "auto:parent_dir"
   file_path: "auto:relative_path"
-  section: ""
+  section: "auto:filename_stem"
